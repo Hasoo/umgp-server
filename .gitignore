@@ -28,4 +28,4 @@ HELP.md
 ### Hasoo ###
 /logs/
 .attach_pid*
-
+*.swp
