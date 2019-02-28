@@ -57,9 +57,9 @@
 	</appender>
 
 	<!--<root level="OFF"> -->
-	<root level="info">
+	<root level="debug">
 		<appender-ref ref="STDOUT" />
-		<appender-ref ref="SAVE-TO-FILE" />
+		<appender-ref ref="FILE" />
 	</root>
 
 	<logger name="com.hasoo.message" additivity="false" level="debug">
