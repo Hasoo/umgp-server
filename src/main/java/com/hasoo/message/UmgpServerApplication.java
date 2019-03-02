@@ -12,7 +12,6 @@ import com.hasoo.message.util.HUtil;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@EnableAsync
 @SpringBootApplication
 public class UmgpServerApplication implements CommandLineRunner {
   @Autowired
