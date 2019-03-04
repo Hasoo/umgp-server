@@ -1,6 +1,6 @@
 package com.hasoo.message.mapper;
 
-import com.hasoo.message.storage.MessageLog;
+import com.hasoo.message.dto.MessageLog;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

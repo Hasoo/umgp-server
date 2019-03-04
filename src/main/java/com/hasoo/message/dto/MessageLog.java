@@ -1,4 +1,4 @@
-package com.hasoo.message.storage;
+package com.hasoo.message.dto;
 
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
