@@ -29,8 +29,8 @@
 			, #{reportDate}
 		)
 	</insert>
-	
-	<select id="findByMsgKey" resultType="MessageLog" parameterType="long">
+
+	<select id="findByMsgKey" parameterType="long" resultType="MessageLog">
 		select * from message_log where msg_key = #{msgKey}
 	</select>
 

@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 public class MessageLog {
+
   private Long msgKey;
   private String userKey;
   private String msgType;

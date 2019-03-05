@@ -1,8 +1,28 @@
 package com.hasoo.message;
 
-import org.springframework.boot.test.context.SpringBootTest;
+import com.hasoo.message.dto.MessageLog;
+import com.hasoo.message.mapper.MessageLogMapper;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mybatis.spring.annotation.MapperScan;
+import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringRunner;
 
-@SpringBootTest
+@RunWith(SpringRunner.class)
+@MapperScan(basePackageClasses = MessageLogMapper.class)
+@ActiveProfiles("test")
+@MybatisTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class MessageLogMapperTest {
 
+  @Autowired
+  MessageLogMapper messageLogMapper;
+
+  @Test
+  public void testSave() {
+    messageLogMapper.save(MessageLog.builder().userKey("1").build());
+  }
 }
