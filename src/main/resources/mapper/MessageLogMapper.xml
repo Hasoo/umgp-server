@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hasoo.message.mapper.MessageLogMapper">
-	
-	<insert id="save" parameterType="MessageLog">
+
+  <insert id="save" keyProperty="msgKey" parameterType="MessageLog" useGeneratedKeys="true">
 		insert into message_log (
 			  user_key
 			, msg_type
@@ -30,7 +30,7 @@
 		)
 	</insert>
 
-	<select id="findByMsgKey" parameterType="long" resultType="MessageLog">
+  <select id="findByMsgKey" parameterType="long" resultType="MessageLog">
 		select * from message_log where msg_key = #{msgKey}
 	</select>
 

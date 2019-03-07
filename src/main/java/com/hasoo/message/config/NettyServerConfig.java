@@ -1,14 +1,15 @@
 package com.hasoo.message.config;
 
+import com.hasoo.message.netty.NettyServer;
+import com.hasoo.message.umgp.UmgpWorker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import com.hasoo.message.netty.NettyServer;
-import com.hasoo.message.umgp.UmgpWorker;
 
 @Configuration
 public class NettyServerConfig {
+
   @Value("${umgp.server.port}")
   private int port;
 

@@ -2,6 +2,7 @@ package com.hasoo.message;
 
 import com.hasoo.message.dto.MessageLog;
 import com.hasoo.message.mapper.MessageLogMapper;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mybatis.spring.annotation.MapperScan;
@@ -23,6 +24,10 @@ public class MessageLogMapperTest {
 
   @Test
   public void testSave() {
-    messageLogMapper.save(MessageLog.builder().userKey("1").build());
+    MessageLog messageLog = MessageLog.builder().userKey("1").build();
+    messageLogMapper.save(messageLog);
+
+    Assert.assertEquals(messageLog.getUserKey(),
+        messageLogMapper.findByMsgKey(messageLog.getMsgKey()).getUserKey());
   }
 }

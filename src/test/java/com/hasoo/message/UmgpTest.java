@@ -3,13 +3,15 @@ package com.hasoo.message;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import com.hasoo.message.umgp.Umgp;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringRunner;
-import com.hasoo.message.umgp.Umgp;
 
 @RunWith(SpringRunner.class)
 public class UmgpTest {
+
   private Umgp umgp = new Umgp();
 
   @Test
