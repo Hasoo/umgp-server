@@ -2,7 +2,6 @@ package com.hasoo.message;
 
 import com.hasoo.message.netty.NettyServer;
 import com.hasoo.message.umgp.ReportDeliverTaskService;
-import com.hasoo.message.util.HUtil;
 import javax.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +19,6 @@ public class UmgpServerApplication implements CommandLineRunner {
 
   private final ReportDeliverTaskService reportDeliverTaskService;
 
-  private boolean isExit = false;
-
   @Autowired
   public UmgpServerApplication(NettyServer nettyServer,
       ReportDeliverTaskService reportDeliverTaskService) {
@@ -35,7 +32,6 @@ public class UmgpServerApplication implements CommandLineRunner {
 
   @PreDestroy
   public void onExit() {
-    isExit = true;
     reportDeliverTaskService.shutdown();
   }
 
@@ -44,9 +40,8 @@ public class UmgpServerApplication implements CommandLineRunner {
     try {
       reportDeliverTaskService.delivery();
       nettyServer.run();
-      log.info("after run");
     } catch (Exception e) {
-      log.error(HUtil.getStackTrace(e));
+      log.error("run-", e);
     } finally {
       nettyServer.shutdown();
     }
