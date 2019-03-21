@@ -8,9 +8,10 @@ import lombok.extern.slf4j.Slf4j;
 public class ReportLineHandler implements LineHandler {
 
   @Override
-  public void handle(Channel channel, ClientContext clientContext) {
+  public void handle(ClientContext clientContext) {
     Umgp.HType headerType = clientContext.getHeaderType();
     Umgp umgp = clientContext.getUmgp();
+    Channel channel = clientContext.getChannel();
 
     if (Umgp.HType.ACK == headerType) {
       log.debug("-> {} key:{}", Umgp.ACK, umgp.getKey());

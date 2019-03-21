@@ -1,10 +1,10 @@
 package com.hasoo.message.netty;
 
-import java.nio.charset.Charset;
 import com.hasoo.message.umgp.UmgpWorker;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import java.nio.charset.Charset;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -37,7 +37,6 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
       if (byteBuf.isReadable()) {
         String line = byteBuf.toString(Charset.defaultCharset());
         line = line.trim();
-        // log.debug(Util.dump(line));
         umgpWorker.receive(ctx.channel(), line);
       }
     } finally {

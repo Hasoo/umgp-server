@@ -1,15 +1,16 @@
 package com.hasoo.message.umgp;
 
+import com.hasoo.message.dto.ClientContext;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.stereotype.Component;
-import com.hasoo.message.dto.ClientContext;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelId;
 
 @Component
 public class ContextManager {
+
   private HashMap<ChannelId, ClientContext> clientContexts = new HashMap<>();
 
   public synchronized void put(Channel channel) {

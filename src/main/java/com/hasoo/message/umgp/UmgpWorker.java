@@ -1,19 +1,18 @@
 package com.hasoo.message.umgp;
 
-import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.Iterator;
-import org.springframework.stereotype.Component;
 import com.hasoo.message.dto.ClientContext;
 import com.hasoo.message.dto.ReportQue;
 import com.hasoo.message.util.HUtil;
 import io.netty.channel.Channel;
+import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Builder
 public class UmgpWorker {
+
   private ContextManager contextManager;
   private DeliveryRepository deliveryRepository;
   private LineHandler sendLineHandler;
@@ -32,34 +31,13 @@ public class UmgpWorker {
       ClientContext clientContext = contextManager.get(channel);
       Umgp umgp = clientContext.getUmgp();
 
-      if (true != umgp.isCompletedBegin()) {
-        clientContext.setHeaderType(umgp.parseHeaderPart(buf));
-      } else {
-        umgp.parseDataPart(buf);
+      if (umgp.parseHeaderPart(buf)) {
+        clientContext.setHeaderType(umgp.getHeaderType());
+        return;
       }
 
-      if (umgp.isCompletedEnd()) {
-        if (true != clientContext.isAuthenticated()) {
-          if (Umgp.HType.CONNECT == clientContext.getHeaderType()) {
-            log.debug("-> {} username:{} password:{} reportline:{} version:{}", Umgp.CONNECT,
-                umgp.getId(), umgp.getPassword(), umgp.getReportline(), umgp.getVersion());
-            if (umgp.getReportline().equals("Y")) {
-              clientContext.setReportline(true);
-            }
-            authenticate(channel, clientContext);
-          } else {
-            throw new RuntimeException(
-                String.format("authentication is required, invalid header:%s %s",
-                    clientContext.getHeaderType(), who(channel)));
-          }
-        } else {
-          if (clientContext.isReportline()) {
-            reportLineHandler.handle(channel, clientContext);
-          } else {
-            sendLineHandler.handle(channel, clientContext);
-          }
-        }
-
+      if (umgp.parseDataPart(buf)) {
+        messageProcess(clientContext);
         umgp.reset();
       }
     } catch (RuntimeException ex) {
@@ -68,8 +46,36 @@ public class UmgpWorker {
     }
   }
 
-  public void authenticate(Channel channel, ClientContext clientContext) {
+  private void messageProcess(ClientContext clientContext) {
     Umgp umgp = clientContext.getUmgp();
+    Channel channel = clientContext.getChannel();
+
+    if (!clientContext.isAuthenticated()) {
+      if (Umgp.HType.CONNECT == clientContext.getHeaderType()) {
+        log.debug("-> {} username:{} password:{} reportline:{} version:{}", Umgp.CONNECT,
+            umgp.getId(), umgp.getPassword(), umgp.getReportline(), umgp.getVersion());
+        if (umgp.getReportline().equals("Y")) {
+          clientContext.setReportline(true);
+        }
+        authenticate(clientContext);
+      } else {
+        throw new RuntimeException(
+            String.format("authentication is required, invalid header:%s %s",
+                clientContext.getHeaderType(), who(channel)));
+      }
+    } else {
+      if (clientContext.isReportline()) {
+        reportLineHandler.handle(clientContext);
+      } else {
+        sendLineHandler.handle(clientContext);
+      }
+    }
+  }
+
+  private void authenticate(ClientContext clientContext) {
+    Umgp umgp = clientContext.getUmgp();
+    Channel channel = clientContext.getChannel();
+
     clientContext.setUsername(umgp.getId());
     if (umgp.getId().equals("test") || umgp.getId().equals("skt") || umgp.getId().equals("kt")
         || umgp.getId().equals("lgt")) {
@@ -81,7 +87,7 @@ public class UmgpWorker {
     }
   }
 
-  public void sendConnectAck(Channel channel, String code, String data) {
+  private void sendConnectAck(Channel channel, String code, String data) {
     StringBuilder packet = new StringBuilder();
     packet.append(Umgp.headerPart(Umgp.ACK));
     packet.append(Umgp.dataPart(Umgp.CODE, code));
@@ -104,9 +110,7 @@ public class UmgpWorker {
   public boolean deliver() {
     try {
       ArrayList<ClientContext> ccs = contextManager.getReportLine();
-      Iterator<ClientContext> it = ccs.iterator();
-      while (it.hasNext()) {
-        ClientContext cc = it.next();
+      for (ClientContext cc : ccs) {
         ReportQue que = deliveryRepository.pop(cc.getUsername());
         if (null != que) {
           sendReport(cc.getChannel(), que);

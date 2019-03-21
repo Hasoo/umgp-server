@@ -20,6 +20,8 @@ public class UmgpServerApplication implements CommandLineRunner {
 
   private final ReportDeliverTaskService reportDeliverTaskService;
 
+  private boolean isExit = false;
+
   @Autowired
   public UmgpServerApplication(NettyServer nettyServer,
       ReportDeliverTaskService reportDeliverTaskService) {
@@ -33,6 +35,7 @@ public class UmgpServerApplication implements CommandLineRunner {
 
   @PreDestroy
   public void onExit() {
+    isExit = true;
     reportDeliverTaskService.shutdown();
   }
 
@@ -41,6 +44,7 @@ public class UmgpServerApplication implements CommandLineRunner {
     try {
       reportDeliverTaskService.delivery();
       nettyServer.run();
+      log.info("after run");
     } catch (Exception e) {
       log.error(HUtil.getStackTrace(e));
     } finally {

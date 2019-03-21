@@ -2,9 +2,11 @@ package com.hasoo.message;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import com.hasoo.message.umgp.Umgp;
+import com.hasoo.message.umgp.Umgp.HType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -17,12 +19,31 @@ public class UmgpTest {
   @Test
   public void testHeader() {
     assertFalse(umgp.isCompletedBegin());
-    assertTrue(Umgp.HType.CONNECT == umgp.parseHeaderPart("BEGIN CONNECT"));
-    assertTrue(Umgp.HType.SEND == umgp.parseHeaderPart("BEGIN SEND"));
-    assertTrue(Umgp.HType.MMS == umgp.parseHeaderPart("BEGIN MMS"));
-    assertTrue(Umgp.HType.PING == umgp.parseHeaderPart("BEGIN PING"));
-    assertTrue(Umgp.HType.PONG == umgp.parseHeaderPart("BEGIN PONG"));
-    assertTrue(Umgp.HType.ACK == umgp.parseHeaderPart("BEGIN ACK"));
+
+    umgp.setCompletedBegin(false);
+    assertTrue(umgp.parseHeaderPart("BEGIN CONNECT"));
+    assertSame(HType.CONNECT, umgp.getHeaderType());
+
+    umgp.setCompletedBegin(false);
+    assertTrue(umgp.parseHeaderPart("BEGIN SEND"));
+    assertSame(HType.SEND, umgp.getHeaderType());
+
+    umgp.setCompletedBegin(false);
+    assertTrue(umgp.parseHeaderPart("BEGIN MMS"));
+    assertSame(HType.MMS, umgp.getHeaderType());
+
+    umgp.setCompletedBegin(false);
+    assertTrue(umgp.parseHeaderPart("BEGIN PING"));
+    assertSame(HType.PING, umgp.getHeaderType());
+
+    umgp.setCompletedBegin(false);
+    assertTrue(umgp.parseHeaderPart("BEGIN PONG"));
+    assertSame(HType.PONG, umgp.getHeaderType());
+
+    umgp.setCompletedBegin(false);
+    assertTrue(umgp.parseHeaderPart("BEGIN ACK"));
+    assertSame(HType.ACK, umgp.getHeaderType());
+
     assertTrue(umgp.isCompletedBegin());
   }
 

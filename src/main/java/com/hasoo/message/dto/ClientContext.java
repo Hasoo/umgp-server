@@ -2,24 +2,24 @@ package com.hasoo.message.dto;
 
 import com.hasoo.message.umgp.Umgp;
 import io.netty.channel.Channel;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Setter;
 
 @Data
 public class ClientContext {
-  private String username;
-  private Channel channel;
-  private Umgp umgp;
 
+  private Channel channel;
+
+  @Setter(AccessLevel.NONE)
+  private Umgp umgp = new Umgp();
+
+  private String username;
+  private boolean reportline = false;
+  private boolean authenticated = false;
   private Umgp.HType headerType;
-  private boolean reportline;
-  private boolean authenticated;
 
   public ClientContext(Channel channel) {
     this.channel = channel;
-    this.umgp = new Umgp();
-
-    this.username = "";
-    this.reportline = false;
-    this.authenticated = false;
   }
 }

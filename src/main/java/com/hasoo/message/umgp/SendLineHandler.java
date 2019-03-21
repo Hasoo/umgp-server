@@ -26,9 +26,10 @@ public class SendLineHandler implements LineHandler {
   }
 
   @Override
-  public void handle(Channel channel, ClientContext clientContext) {
+  public void handle(ClientContext clientContext) {
     Umgp.HType headerType = clientContext.getHeaderType();
     Umgp umgp = clientContext.getUmgp();
+    Channel channel = clientContext.getChannel();
 
     if (Umgp.HType.SEND == headerType) {
       log.debug("-> {} key:{} phone:{} callback:{} message:{}", Umgp.SEND, umgp.getKey(),
