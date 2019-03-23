@@ -33,10 +33,7 @@ public class UmgpWorker {
 
       if (umgp.parseHeaderPart(buf)) {
         clientContext.setHeaderType(umgp.getHeaderType());
-        return;
-      }
-
-      if (umgp.parseDataPart(buf)) {
+      } else if (umgp.parseDataPart(buf)) {
         messageProcess(clientContext);
         umgp.reset();
       }
@@ -47,22 +44,8 @@ public class UmgpWorker {
   }
 
   private void messageProcess(ClientContext clientContext) {
-    Umgp umgp = clientContext.getUmgp();
-    Channel channel = clientContext.getChannel();
-
     if (!clientContext.isAuthenticated()) {
-      if (Umgp.HType.CONNECT == clientContext.getHeaderType()) {
-        log.debug("-> {} username:{} password:{} reportline:{} version:{}", Umgp.CONNECT,
-            umgp.getId(), umgp.getPassword(), umgp.getReportline(), umgp.getVersion());
-        if (umgp.getReportline().equals("Y")) {
-          clientContext.setReportline(true);
-        }
-        authenticate(clientContext);
-      } else {
-        throw new RuntimeException(
-            String.format("authentication is required, invalid header:%s %s",
-                clientContext.getHeaderType(), who(channel)));
-      }
+      authenticate(clientContext);
     } else {
       if (clientContext.isReportline()) {
         reportLineHandler.handle(clientContext);
@@ -76,14 +59,28 @@ public class UmgpWorker {
     Umgp umgp = clientContext.getUmgp();
     Channel channel = clientContext.getChannel();
 
-    clientContext.setUsername(umgp.getId());
-    if (umgp.getId().equals("test") || umgp.getId().equals("skt") || umgp.getId().equals("kt")
-        || umgp.getId().equals("lgt")) {
-      sendConnectAck(channel, "100", "success");
-      clientContext.setAuthenticated(true);
+    if (Umgp.HType.CONNECT == clientContext.getHeaderType()) {
+      log.debug("-> {} username:{} password:{} reportline:{} version:{}", Umgp.CONNECT,
+          umgp.getId(), umgp.getPassword(), umgp.getReportline(), umgp.getVersion());
+
+      if (umgp.getReportline().equals("Y")) {
+        clientContext.setReportline(true);
+      }
+      clientContext.setUsername(umgp.getId());
+
+      // AuthenticationProvider
+      if (umgp.getId().equals("test") || umgp.getId().equals("skt") || umgp.getId().equals("kt")
+          || umgp.getId().equals("lgt")) {
+        sendConnectAck(channel, "100", "success");
+        clientContext.setAuthenticated(true);
+      } else {
+        sendConnectAck(channel, "200", "failure");
+        channel.close();
+      }
     } else {
-      sendConnectAck(channel, "200", "failure");
-      channel.close();
+      throw new RuntimeException(
+          String.format("authentication is required, invalid header:%s %s",
+              clientContext.getHeaderType(), who(channel)));
     }
   }
 

@@ -21,15 +21,12 @@ public class ReportDeliverTaskService {
   }
 
   public void delivery() {
-    taskExecutor.execute(new Runnable() {
-      @Override
-      public void run() {
-        while (true != isShutdown) {
-          if (true != umgpWorker.deliver()) {
-            try {
-              TimeUnit.SECONDS.sleep(1);
-            } catch (InterruptedException e) {
-            }
+    taskExecutor.execute(() -> {
+      while (!isShutdown) {
+        if (!umgpWorker.deliver()) {
+          try {
+            TimeUnit.SECONDS.sleep(1);
+          } catch (InterruptedException ignored) {
           }
         }
       }
